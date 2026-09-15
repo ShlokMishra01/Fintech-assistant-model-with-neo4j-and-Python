@@ -1,476 +1,569 @@
-# 💸 FinanceFlow AI
+# FinanceFlow AI
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-3670A0?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/Neo4j-Graph%20Intelligence-018BFF?style=for-the-badge&logo=neo4j&logoColor=white" />
-  <img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
-  <img src="https://img.shields.io/badge/AI-GraphRAG-7C3AED?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Python-3.10%2B-111827?style=flat-square&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/FastAPI-Backend-111827?style=flat-square&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/Neo4j-Graph-111827?style=flat-square&logo=neo4j&logoColor=white" />
+  <img src="https://img.shields.io/badge/Streamlit-Analytics-111827?style=flat-square&logo=streamlit&logoColor=white" />
+  <img src="https://img.shields.io/badge/GraphRAG-Financial%20Reasoning-111827?style=flat-square" />
 </p>
 
 <p align="center">
-  <strong>🧠 A graph-powered personal finance intelligence system</strong>
+  <strong>A graph-powered financial intelligence system.</strong><br/>
+  Understand financial relationships, calculate decisions deterministically, and explain them with AI.
 </p>
 
 <p align="center">
-  <em>Understand your money. Connect the relationships. Calculate the facts. Explain the decision.</em>
-</p>
-
-<p align="center">
-
-**Natural Language → Financial Graph → Deterministic Engine → AI Reasoning → Actionable Insight**
-
+  <a href="#system-architecture">Architecture</a> ·
+  <a href="#decision-engine">Decision Engine</a> ·
+  <a href="#case-studies">Case Studies</a> ·
+  <a href="#dashboard">Dashboard</a> ·
+  <a href="#quick-start">Run</a>
 </p>
 
 ---
 
-# ⚡ FinanceFlow in 30 Seconds
+## Product Overview
 
-FinanceFlow AI is a **personal finance intelligence engine** that combines:
+FinanceFlow AI is a personal finance intelligence platform built around a simple architectural principle:
 
-**Neo4j graph relationships**
-+
-**deterministic Python financial calculations**
-+
-**GraphRAG context retrieval**
-+
-**LLM-powered explanations**
-+
-**interactive financial analytics**
+> **AI should explain financial decisions — not invent the financial facts behind them.**
 
-Instead of asking an LLM to "figure out your finances", FinanceFlow first builds a structured representation of the user's financial life, calculates the important numbers deterministically, and then uses AI to explain those results.
-
-```mermaid
-flowchart LR
-    A["👤 User"] --> B["💬 Natural Language"]
-    B --> C["🧠 Financial NLU"]
-    C --> D[("🕸️ Neo4j Graph")]
-    D --> E["🔎 GraphRAG"]
-    E --> F["🧮 Financial Engine"]
-    F --> G["✅ Verified Metrics"]
-    G --> H["🤖 AI Explanation"]
-    H --> I["📊 Dashboard / API"]
-```
-
----
-
-# 🚨 Why Not Just Use ChatGPT for Personal Finance?
-
-A generic AI assistant has two fundamental weaknesses when used for financial reasoning:
+Instead of sending a user's question directly to an LLM, FinanceFlow connects:
 
 ```text
-                  GENERIC AI
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-    Missing context         Unreliable math
-          │                       │
-          └───────────┬───────────┘
-                      ▼
-             Vague financial advice
+Natural Language
+       ↓
+Financial Fact Extraction
+       ↓
+Neo4j Relationship Graph
+       ↓
+Relevant Context Retrieval
+       ↓
+Deterministic Financial Engine
+       ↓
+Verified Metrics
+       ↓
+AI Explanation
+       ↓
+Dashboard / API
 ```
 
-FinanceFlow changes the architecture:
-
-```text
-                  FINANCEFLOW
-                       │
-        ┌──────────────┼──────────────┐
-        ▼              ▼              ▼
-   Financial        Graph           Deterministic
-    Facts         Relationships       Math
-        │              │              │
-        └──────────────┼──────────────┘
-                       ▼
-                Relevant Context
-                       │
-                       ▼
-                  AI Explanation
-```
-
-### The core design principle
-
-> **LLM for understanding and explanation.
-> Graph for relationships.
-> Python for financial truth.**
-
-That separation is what makes the system more auditable and grounded.
+The result is a system designed to reason over a **connected financial state** rather than isolated transactions or generic prompts.
 
 ---
 
-# 🧬 The Financial Intelligence Loop
+# The Problem
+
+Most consumer finance tools fall into one of two categories.
+
+### Traditional finance software
+
+```text
+Transactions
+     ↓
+Tables
+     ↓
+Charts
+     ↓
+Manual interpretation
+```
+
+### Generic AI assistants
+
+```text
+Question
+   ↓
+LLM
+   ↓
+Answer
+```
+
+The first provides data without much reasoning.
+
+The second provides reasoning without a reliable financial state.
+
+FinanceFlow combines the two:
+
+```text
+             FINANCIAL DATA
+                    │
+                    ▼
+           ┌─────────────────┐
+           │  RELATIONSHIPS  │
+           │     Neo4j       │
+           └────────┬────────┘
+                    │
+                    ▼
+           ┌─────────────────┐
+           │  FINANCIAL MATH │
+           │     Python      │
+           └────────┬────────┘
+                    │
+                    ▼
+           ┌─────────────────┐
+           │ AI EXPLANATION  │
+           └─────────────────┘
+```
+
+This architecture is the core of the project.
+
+---
+
+# What Makes It Different?
+
+A conventional finance application might know:
+
+```text
+Salary        ₹1,20,000
+Expenses        ₹72,000
+EMI             ₹18,000
+Savings         ₹48,000
+```
+
+FinanceFlow attempts to understand how those values are related:
 
 ```mermaid
 flowchart TD
-    A["💬 User Event<br/>I spent ₹3,400 on groceries"] --> B["NLP Extraction"]
-    B --> C["Structured Financial Fact"]
-    C --> D[("Neo4j")]
-    D --> E["Connected Financial Context"]
-    E --> F["Deterministic Engine"]
-    F --> G["Financial Metrics"]
-    G --> H["AI Reasoning"]
-    H --> I["💡 Actionable Insight"]
-    I --> J["📊 Dashboard"]
+
+    U["User"]
+
+    U --> A["Account"]
+    A --> I["Income"]
+    A --> E["Expenses"]
+
+    U --> D["Debt"]
+    D --> EMI["EMI"]
+
+    U --> P["Portfolio"]
+    P --> AS["Assets"]
+
+    U --> G["Financial Goal"]
+    G --> EF["Emergency Fund"]
+
+    I --> CF["Cash Flow"]
+    E --> CF
+    EMI --> CF
+
+    CF --> S["Savings Rate"]
+    CF --> NW["Net Worth"]
+    CF --> R["Emergency Runway"]
+
+    S --> H["Financial State"]
+    NW --> H
+    R --> H
 ```
 
-Every interaction becomes part of a continuously connected financial picture.
+The distinction is therefore not simply "AI-powered budgeting."
+
+It is **relationship-aware financial reasoning**.
 
 ---
 
-# 📊 What FinanceFlow Understands
-
-FinanceFlow models a financial life as interconnected entities rather than isolated transactions.
-
-```mermaid
-graph TD
-
-    U["👤 User"]
-
-    U --> A["🏦 Accounts"]
-    U --> I["💰 Income"]
-    U --> E["💸 Expenses"]
-    U --> D["💳 Debt"]
-    U --> G["🎯 Goals"]
-    U --> P["📈 Portfolio"]
-
-    A --> I
-    A --> E
-
-    I --> M["📅 Month"]
-    E --> C["🏷️ Category"]
-
-    D --> EMI["🧾 EMI Obligation"]
-
-    G --> EF["🛡️ Emergency Fund"]
-
-    P --> AS["📦 Assets"]
-```
-
-This allows the system to reason across relationships such as:
-
-```text
-User
- ├── receives → Income
- ├── spends → Expenses
- ├── owns → Assets
- ├── owes → Debt
- ├── tracks → Goals
- └── invests through → Portfolio
-```
-
----
-
-# 🎯 The Difference: A Connected Financial Brain
-
-A traditional budgeting application may see:
-
-```text
-₹3,400 → Groceries
-₹18,000 → EMI
-₹1,20,000 → Salary
-```
-
-FinanceFlow attempts to understand the relationships:
-
-```text
-                    USER
-                      │
-        ┌─────────────┼─────────────┐
-        ▼             ▼             ▼
-      Income        Spending       Debt
-        │             │             │
-        ▼             ▼             ▼
-     ₹1.2L         ₹46K/month     ₹18K EMI
-        │             │             │
-        └───────┬─────┴──────┬──────┘
-                ▼            ▼
-             Savings       DTI
-                │            │
-                └──────┬─────┘
-                       ▼
-               Financial Health
-```
-
-The graph is therefore not just a database.
-
-It acts as the **relationship layer of the financial reasoning system**.
-
----
-
-# 💬 Natural Language → Financial Intelligence
-
-The user does not need to manually populate every field.
-
-### Example
-
-```text
-"I got my salary today."
-
-"I spent ₹3,400 on groceries."
-
-"I have a ₹24,000 home-loan EMI."
-
-"Can I afford a ₹35,000 laptop?"
-```
-
-The system converts these interactions into structured information.
+# System Architecture
 
 ```mermaid
 flowchart LR
-    A["💬 Natural Language"] --> B["Entity Extraction"]
-    B --> C["Transaction / Financial Event"]
-    C --> D[("Neo4j")]
-    D --> E["Financial Context"]
+
+    A["User"] --> B["Streamlit / API"]
+
+    B --> C["Natural Language Understanding"]
+
+    C --> D["Financial Fact Extraction"]
+
+    D --> E[("Neo4j Financial Graph")]
+
+    E --> F["GraphRAG Retrieval"]
+
+    F --> G["Financial Calculation Engine"]
+
+    G --> H["Verified Metrics"]
+
+    H --> I["LLM Explanation"]
+
+    I --> J["Dashboard / Assistant / API"]
 ```
+
+### Responsibility is deliberately separated
+
+| Layer         | Responsibility                           |
+| ------------- | ---------------------------------------- |
+| NLU           | Understand user language                 |
+| Neo4j         | Store financial entities + relationships |
+| GraphRAG      | Retrieve relevant context                |
+| Python Engine | Perform deterministic calculations       |
+| LLM           | Explain results                          |
+| Streamlit     | Present insights                         |
+| FastAPI       | Expose the system programmatically       |
 
 ---
 
-# 🧮 The Deterministic Financial Engine
+# A Financial Question, End to End
 
-This is one of the most important parts of the architecture.
-
-The LLM is **not responsible for calculating the financial metrics**.
-
-Instead:
-
-```mermaid
-flowchart TD
-    A["Financial Graph"] --> B["Python Financial Engine"]
-
-    B --> C["Monthly Income"]
-    B --> D["Monthly Expenses"]
-    B --> E["Savings Rate"]
-    B --> F["Net Worth"]
-    B --> G["Emergency Runway"]
-    B --> H["Debt-to-Income"]
-    B --> I["Financial Health"]
-    B --> J["Purchase Safety"]
-```
-
-This separation makes the calculations explicit and testable.
-
-### Example formulas
-
-```text
-Savings Rate
-= (Income − Expenses) / Income
-
-Emergency Runway
-= Liquid Reserves / Monthly Expenses
-
-Net Worth
-= Assets − Liabilities
-
-DTI
-= Debt Payments / Gross Income
-```
-
-The system then gives the AI the **calculated evidence** rather than asking the model to invent the arithmetic.
-
----
-
-# 🔎 GraphRAG: Retrieve What Actually Matters
-
-Suppose a user asks:
+Consider:
 
 > **"Can I afford a ₹35,000 laptop?"**
 
-FinanceFlow does not need the user's entire financial database.
+FinanceFlow does not immediately ask an LLM for a yes/no answer.
 
-It can retrieve the relevant context:
+It follows a decision pipeline.
 
 ```mermaid
 flowchart TD
-    Q["💬 Can I afford ₹35,000?"]
 
-    Q --> G[("Neo4j")]
+    Q["Can I afford ₹35,000?"]
 
-    G --> A["💰 Current Liquidity"]
-    G --> B["📊 Monthly Expenses"]
-    G --> C["💵 Savings Rate"]
-    G --> D["💳 EMI / Debt"]
-    G --> E["🛡️ Emergency Fund"]
+    Q --> A["Current Liquidity"]
+    Q --> B["Monthly Expenses"]
+    Q --> C["Savings Rate"]
+    Q --> D["Debt / EMI"]
+    Q --> E["Emergency Runway"]
 
-    A --> R["Relevant Subgraph"]
+    A --> R["Relevant Financial Context"]
     B --> R
     C --> R
     D --> R
     E --> R
 
-    R --> F["Financial Engine"]
-    F --> H["Grounded Answer"]
+    R --> M["Deterministic Financial Engine"]
+
+    M --> X["Purchase Safety Analysis"]
+
+    X --> L["AI Explanation"]
 ```
 
-This is the role of **GraphRAG** in the system:
-
-> retrieve the relationships that matter for the question, calculate from those facts, and then explain the result.
+The answer is therefore grounded in the user's actual financial state.
 
 ---
 
-# 📈 LIVE ANALYTICS
+# Decision Engine
 
-The Streamlit application turns the underlying financial graph into an interactive dashboard.
+The financial engine is the deterministic core of the application.
 
-Recommended dashboard sections:
+The LLM is not expected to perform the arithmetic.
+
+### Example metrics
 
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│                  FINANCEFLOW EXECUTIVE VIEW                  │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  NET WORTH       SAVINGS RATE      RUNWAY       HEALTH       │
-│  ₹18.45L          28.4%            6.2 mo       82/100       │
-│                                                              │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  📈 Net Worth Trend              💸 Monthly Cash Flow        │
-│                                                              │
-│       ╱╲                       Income ███████████            │
-│   ╱──╯  ╲──╮                   Spend  ████████               │
-│ ─╯          ╰──                Save   ████                   │
-│                                                              │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  🥧 Asset Allocation            🎯 Goal Progress             │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
+Monthly Savings
+= Income − Expenses
+
+Savings Rate
+= (Income − Expenses) / Income
+
+Net Worth
+= Assets − Liabilities
+
+Emergency Runway
+= Liquid Reserves / Monthly Expenses
+
+Debt-to-Income
+= Debt Payments / Gross Income
 ```
 
-### Suggested live charts from the application
+Conceptually:
 
-Use actual Plotly outputs from the running dashboard for:
+```text
+                    Financial Graph
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ Financial Engine  │
+                 └─────────┬─────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          ▼                ▼                ▼
+      Cash Flow         Net Worth        Debt Load
+          │                │                │
+          └────────────────┼────────────────┘
+                           ▼
+                    Financial State
+```
 
-**Net Worth Trend**
-
-**Income vs Expenses**
-
-**Savings Rate**
-
-**Asset Allocation**
-
-**Portfolio Performance**
-
-**Debt / EMI Load**
-
-**Goal Progress**
-
-**Emergency Fund Progress**
-
-> Keep these charts generated from application data rather than inserting fake screenshots.
+This separation makes the numerical layer easier to inspect and test.
 
 ---
 
-# 📊 Suggested Dashboard Visuals
+# GraphRAG Layer
 
-Once the dashboard is running, place exported screenshots under:
+The graph is not simply used as storage.
+
+It provides the connected context required for a question.
+
+For a purchase question, the system may retrieve:
 
 ```text
-assets/
-├── dashboard-overview.png
-├── cashflow.png
-├── networth.png
-├── portfolio.png
-└── goals.png
+Account Balance
+      │
+      ├── Monthly Income
+      ├── Monthly Expenses
+      ├── Existing EMI
+      ├── Emergency Reserve
+      ├── Savings Rate
+      └── Financial Goals
 ```
 
-Then expose them in the README:
+Then:
 
-```markdown
-![FinanceFlow Dashboard](./assets/dashboard-overview.png)
+```mermaid
+flowchart LR
+
+    Q["User Question"]
+        -->
+    G[("Neo4j")]
+
+    G --> S["Relevant Subgraph"]
+
+    S --> C["Financial Context"]
+
+    C --> M["Deterministic Calculation"]
+
+    M --> E["Evidence"]
+
+    E --> L["LLM"]
+
+    L --> R["Explanation"]
 ```
 
-```markdown
-![Cash Flow Analytics](./assets/cashflow.png)
-```
-
-```markdown
-![Portfolio Analytics](./assets/portfolio.png)
-```
-
-This makes the GitHub page visually demonstrate the product instead of describing it abstractly.
+This is the practical role of GraphRAG in the system.
 
 ---
 
-# 🧪 CASE STUDY 01 — Emergency Fund Intelligence
+# From Raw Event to Financial Insight
 
-### Scenario
-
-A user asks:
-
-> **"How financially prepared am I for an emergency?"**
-
-### Input
-
-| Metric                |     Value |
-| --------------------- | --------: |
-| Monthly expenses      |   ₹48,000 |
-| Liquid balance        | ₹2,40,000 |
-| Emergency-fund target |   ₹90,000 |
-| Monthly income        | ₹1,20,000 |
-
-### Financial engine
+A transaction can begin as ordinary language:
 
 ```text
-Required reserve
+"I spent ₹3,400 on groceries yesterday."
+```
+
+The system turns that into a structured financial event:
+
+```text
+Entity
+├── User
+├── Amount: ₹3,400
+├── Category: Groceries
+├── Type: Expense
+└── Date: Yesterday
+```
+
+Then:
+
+```mermaid
+flowchart LR
+
+    A["Natural Language Event"]
+    --> B["Structured Financial Fact"]
+    --> C[("Neo4j")]
+    --> D["Updated Financial State"]
+    --> E["Recomputed Metrics"]
+    --> F["Dashboard / AI"]
+```
+
+This means the financial state evolves from **events**, not just manually entered dashboard fields.
+
+---
+
+# Dashboard
+
+The dashboard is designed around financial signals rather than a collection of decorative charts.
+
+### Executive view
+
+<p align="center">
+  <img src="./assets/dashboard-overview.png" alt="FinanceFlow executive dashboard" width="950">
+</p>
+
+### Core indicators
+
+```text
+┌────────────────────────────────────────────────────────────────────┐
+│                         FINANCEFLOW                               │
+├────────────────┬────────────────┬────────────────┬────────────────┤
+│    NET WORTH   │  SAVINGS RATE  │    RUNWAY      │ FINANCIAL STATE│
+│    ₹18.45L     │      28.4%     │    6.2 mo      │     82 / 100   │
+├────────────────┴────────────────┴────────────────┴────────────────┤
+│                                                                    │
+│  NET WORTH TREND                 MONTHLY CASH FLOW                 │
+│                                                                    │
+│       ╭──────╮                         ███████████ Income          │
+│  ╭────╯      ╰──╮                     ████████    Expenses        │
+│──╯              ╰──                     ████        Savings        │
+│                                                                    │
+├────────────────────────────────────────────────────────────────────┤
+│  ASSET ALLOCATION                   GOAL PROGRESS                  │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+The values above are illustrative UI examples; actual README screenshots should be exported from the running application.
+
+---
+
+# Interactive Analytics
+
+The application can expose the financial state through visual analytics such as:
+
+### Net Worth
+
+<p align="center">
+  <img src="./assets/networth.png" alt="Net worth trend" width="850">
+</p>
+
+### Cash Flow
+
+<p align="center">
+  <img src="./assets/cashflow-analysis.png" alt="Cash flow analysis" width="850">
+</p>
+
+### Portfolio
+
+<p align="center">
+  <img src="./assets/portfolio-analysis.png" alt="Portfolio analytics" width="850">
+</p>
+
+### Goals
+
+<p align="center">
+  <img src="./assets/goal-progress.png" alt="Goal progress analytics" width="850">
+</p>
+
+Use actual Plotly exports from the application for these assets.
+
+---
+
+# Live Product Demonstration
+
+A short GIF is more effective than another 50 lines of explanation.
+
+Recommended recording:
+
+```text
+User enters transaction
+        ↓
+Dashboard updates
+        ↓
+Graph state changes
+        ↓
+Metrics recalculate
+        ↓
+AI insight appears
+```
+
+Add the recording here:
+
+<p align="center">
+  <img src="./assets/financeflow-demo.gif" alt="FinanceFlow live dashboard workflow" width="950">
+</p>
+
+### Recommended GIF sequence
+
+```text
+00:00  Dashboard
+00:03  Add transaction
+00:06  Graph update
+00:09  Metrics recalculate
+00:12  Ask financial question
+00:16  Grounded response
+```
+
+Keep the GIF under roughly 8–12 MB so the GitHub page remains fast.
+
+---
+
+# Case Studies
+
+The following cases demonstrate how FinanceFlow moves from **financial facts → calculations → context → explanation**.
+
+---
+
+## Case Study 01 — Emergency Fund
+
+### User question
+
+> **"How prepared am I for an emergency?"**
+
+### Financial state
+
+| Metric           |     Value |
+| ---------------- | --------: |
+| Monthly spending |   ₹48,000 |
+| Liquid balance   | ₹2,40,000 |
+| Emergency target |   ₹90,000 |
+| Monthly income   | ₹1,20,000 |
+
+### Calculation layer
+
+```text
+Reserve Benchmark
 = 3 × ₹48,000
 = ₹1,44,000
 ```
 
 ```text
-Current reserve
-= ₹90,000
-```
-
-```text
-Reserve shortfall
+Reserve Gap
 = ₹1,44,000 − ₹90,000
 = ₹54,000
 ```
 
 ```text
-Runway
+Liquidity Runway
 = ₹2,40,000 / ₹48,000
 = 5.0 months
 ```
 
-### What the system sees
+### Reasoning path
 
 ```mermaid
 flowchart LR
-    A["₹2.40L Liquidity"] --> D["5.0 Month Runway"]
-    B["₹48K Monthly Spend"] --> D
-    C["₹90K Emergency Target"] --> E["₹54K Gap"]
-    
-    D --> F["Financial Context"]
+
+    A["₹2.40L Liquid Balance"]
+    --> C["5.0 Month Runway"]
+
+    B["₹48K Monthly Expenses"]
+    --> C
+
+    D["₹90K Emergency Reserve"]
+    --> E["₹54K Reserve Gap"]
+
+    C --> F["Financial Context"]
     E --> F
 
     F --> G["AI Explanation"]
 ```
 
-### Example output
+### System output
 
-> **Emergency resilience is supported by a 5-month liquidity runway, while the current emergency reserve target remains ₹54,000 below the calculated 3-month reserve benchmark.**
+The system can explain that the user's **current liquidity provides a 5-month runway**, while the emergency reserve target is below the calculated 3-month benchmark.
 
-The important part is not the wording.
+The important property is traceability:
 
-It is that the explanation is backed by **retrieved financial facts + deterministic calculations**.
+```text
+Answer
+  ↑
+Calculated Metrics
+  ↑
+Financial Facts
+  ↑
+Neo4j Context
+```
 
 ---
 
-# 💻 CASE STUDY 02 — "Can I Buy This?"
+# Case Study 02 — Purchase Safety
 
 ### User question
 
 > **"Can I afford a ₹35,000 laptop?"**
 
-### Retrieved financial context
+### Retrieved context
 
 | Factor           |      Value |
 | ---------------- | ---------: |
-| Monthly expenses |    ₹46,000 |
 | Liquidity        |  ₹1,80,000 |
+| Monthly expenses |    ₹46,000 |
 | Savings rate     |        24% |
-| Active EMI       |    ₹18,000 |
+| EMI              |    ₹18,000 |
 | Emergency runway | 4.1 months |
 | Purchase         |    ₹35,000 |
 
@@ -479,347 +572,272 @@ It is that the explanation is backed by **retrieved financial facts + determinis
 ```mermaid
 flowchart TD
 
-    A["💻 ₹35,000 Purchase"] --> B["Liquidity Check"]
-    A --> C["Emergency Runway"]
-    A --> D["Savings Rate"]
-    A --> E["Debt / EMI"]
+    A["₹35,000 Purchase"]
+
+    A --> B["Liquidity"]
+    A --> C["Monthly Cash Flow"]
+    A --> D["Emergency Runway"]
+    A --> E["Debt Obligations"]
 
     B --> F["Financial Engine"]
     C --> F
     D --> F
     E --> F
 
-    F --> G["Purchase Safety Analysis"]
-    G --> H["AI Explanation"]
+    F --> G["Purchase Safety"]
+
+    G --> H["Grounded AI Explanation"]
 ```
 
-Instead of returning:
+Instead of:
 
 ```text
-YES ✅
+YES
 ```
 
-FinanceFlow can explain **which financial factors produced the assessment**.
+the assistant can expose the financial factors that produced the assessment.
 
-That is the difference between a calculator and a financial reasoning system.
+That turns the product from a **binary affordability calculator** into an **explainable decision-support workflow**.
 
 ---
 
-# 📊 CASE STUDY 03 — Monthly Financial Health
+# Case Study 03 — Monthly Financial Health
 
 ### Example financial state
 
 ```text
-Income              ₹1,25,000
-Expenses              ₹72,000
-Monthly Savings       ₹53,000
-Outstanding Debt     ₹2,10,000
-Savings Rate            42.4%
-Emergency Runway        7.2 mo
-DTI                       18%
+Income                    ₹1,25,000
+Expenses                    ₹72,000
+Monthly Savings             ₹53,000
+Outstanding Debt           ₹2,10,000
+Savings Rate                  42.4%
+Emergency Runway              7.2 mo
+Debt-to-Income                18%
 ```
 
-### Derived state
-
-```mermaid
-flowchart LR
-    A["₹1.25L Income"] --> E["Financial State"]
-    B["₹72K Expenses"] --> E
-    C["₹53K Savings"] --> E
-    D["₹2.10L Debt"] --> E
-
-    E --> F["42.4% Savings"]
-    E --> G["7.2 Month Runway"]
-    E --> H["18% DTI"]
-
-    F --> I["AI Financial Overview"]
-    G --> I
-    H --> I
-```
-
-The assistant can then summarize the **current state of the financial system**, instead of discussing isolated transactions.
-
----
-
-# 🕸️ Why Neo4j?
-
-A relational table might store:
-
-```text
-transaction_id | category | amount | date
-```
-
-The graph can additionally represent relationships:
-
-```text
-User
- │
- ├── owns → Account
- │              │
- │              └── receives → Salary
- │
- ├── spends → Expense
- │              └── category → Groceries
- │
- ├── owes → Loan
- │            └── generates → EMI
- │
- ├── owns → Portfolio
- │            └── contains → Asset
- │
- └── targets → Goal
-```
-
-This makes connected queries much more natural.
-
-### Example
-
-```text
-Purchase Question
-       ↓
-Account Balance
-       ↓
-Monthly Cash Flow
-       ↓
-Debt Obligations
-       ↓
-Emergency Fund
-       ↓
-Financial Goal
-       ↓
-Purchase Analysis
-```
-
----
-
-# 🤖 AI Layer
-
-The AI layer sits **after the financial reasoning**, not before it.
+### Derived financial state
 
 ```mermaid
 flowchart LR
 
-    A["Verified Metrics"] --> C["LLM"]
-    B["Relevant Graph Context"] --> C
+    A["Income"]
+    B["Expenses"]
+    C["Debt"]
+    D["Savings"]
 
-    C --> D["Natural Language Explanation"]
+    A --> F["Financial State"]
+    B --> F
+    C --> F
+    D --> F
 
-    D --> E["User"]
+    F --> G["Savings Rate"]
+    F --> H["Runway"]
+    F --> I["DTI"]
+    F --> J["Net Worth"]
+
+    G --> K["AI Financial Overview"]
+    H --> K
+    I --> K
+    J --> K
 ```
 
-### AI handles
-
-* conversational interaction
-* explanation
-* summarization
-* contextual guidance
-* natural-language understanding
-
-### Deterministic engine handles
-
-* financial calculations
-* ratios
-* totals
-* runway
-* savings
-* debt metrics
-* purchase calculations
-
-This division is central to the architecture.
+The result is a **state-level financial summary**, rather than four unrelated statistics.
 
 ---
 
-# 📦 Product Capabilities
+# Case Study 04 — Natural Language Transaction
 
-| Module                      | What it provides                      |
-| --------------------------- | ------------------------------------- |
-| 💸 Transaction Intelligence | Natural-language financial events     |
-| 🕸️ Financial Graph         | Connected financial entities          |
-| 🧮 Financial Engine         | Deterministic calculations            |
-| 🔎 GraphRAG                 | Relevant financial context            |
-| 💳 Debt Intelligence        | EMI and debt analysis                 |
-| 🛡️ Emergency Fund          | Reserve + runway analysis             |
-| 💰 Net Worth                | Assets vs liabilities                 |
-| 📈 Portfolio                | Investment / market context           |
-| 🎯 Goals                    | Goal and milestone tracking           |
-| 📊 Dashboard                | Interactive analytics                 |
-| 🤖 AI Copilot               | Human-readable financial explanations |
+### Input
+
+> **"I received ₹1,20,000 salary today and spent ₹4,500 on groceries."**
+
+### Extraction
+
+```text
+INCOME
+₹1,20,000
+Salary
+Today
+
+EXPENSE
+₹4,500
+Groceries
+Today
+```
+
+### Graph update
+
+```mermaid
+flowchart LR
+
+    U["User"]
+
+    U --> A["Account"]
+
+    A --> I["Salary"]
+    A --> E["Groceries"]
+
+    I --> M["Monthly Cash Flow"]
+    E --> M
+
+    M --> S["Savings"]
+    M --> N["Net Worth"]
+```
+
+### Result
+
+The transaction is no longer just a row in a table.
+
+It becomes a new event inside the user's connected financial state.
 
 ---
 
-# 🏗️ Full System Architecture
+# Portfolio Intelligence
+
+Investment information is treated as another part of the user's financial graph.
+
+```mermaid
+flowchart TD
+
+    U["User"]
+    --> P["Portfolio"]
+
+    P --> E["Equity"]
+    P --> M["Mutual Funds"]
+    P --> G["Gold"]
+    P --> C["Cash"]
+
+    E --> A["Asset Allocation"]
+    M --> A
+    G --> A
+    C --> A
+
+    A --> H["Portfolio Overview"]
+```
+
+The repository also integrates market-context tooling through **OpenBB / Yahoo Finance**, alongside the application's portfolio layer.
+
+---
+
+# Financial Graph
+
+The complete financial state can be viewed conceptually as:
+
+```text
+                              USER
+                                │
+       ┌────────────────────────┼────────────────────────┐
+       │                        │                        │
+       ▼                        ▼                        ▼
+    ACCOUNTS                 GOALS                  PORTFOLIO
+       │                        │                        │
+   ┌───┴────┐                   │                 ┌──────┼──────┐
+   ▼        ▼                   ▼                 ▼      ▼      ▼
+ INCOME   EXPENSES         EMERGENCY FUND       EQUITY   MF    GOLD
+   │        │
+   └────┬───┘
+        ▼
+    CASH FLOW
+        │
+   ┌────┼──────────────┐
+   ▼    ▼              ▼
+ SAVINGS  RUNWAY       DEBT
+                       │
+                       ▼
+                      EMI
+```
+
+This is the structural layer that makes relationship-aware financial reasoning possible.
+
+---
+
+# Architecture: Data → Reasoning → Explanation
 
 ```mermaid
 flowchart TB
 
-    U["👤 USER"]
+    A["Raw Financial Events"]
 
-    U --> UI["🖥️ Streamlit"]
-    U --> API["⚡ FastAPI"]
-    U --> CHAT["💬 AI Assistant"]
+    A --> B["Entity & Intent Extraction"]
 
-    UI --> API
-    CHAT --> API
+    B --> C[("Financial Knowledge Graph")]
 
-    API --> NLU["🧠 NLU / Extraction"]
+    C --> D["Relevant Subgraph"]
 
-    NLU --> GRAPH[("🕸️ Neo4j")]
+    D --> E["Deterministic Financial Engine"]
 
-    GRAPH --> RAG["🔎 GraphRAG Retrieval"]
+    E --> F["Verified Metrics"]
 
-    RAG --> ENGINE["🧮 Financial Engine"]
+    F --> G["LLM"]
 
-    ENGINE --> METRICS["✅ Verified Financial Metrics"]
+    G --> H["Natural Language Explanation"]
 
-    METRICS --> LLM["🤖 LLM"]
-
-    LLM --> RESPONSE["💡 Grounded Explanation"]
-
-    RESPONSE --> UI
-    RESPONSE --> CHAT
-    RESPONSE --> API
+    H --> I["User / Dashboard"]
 ```
+
+The system deliberately keeps the **calculation layer separate from the language model**.
 
 ---
 
-# 🔄 From Transaction to Insight
+# Feature Map
 
-A complete interaction looks like this:
-
-```text
-USER
-"I received ₹1,20,000 salary."
-
-        ↓
-
-NATURAL LANGUAGE UNDERSTANDING
-
-        ↓
-
-STRUCTURED FINANCIAL EVENT
-
-        ↓
-
-NEO4J
-User → Account → Income → Month
-
-        ↓
-
-FINANCIAL RECOMPUTATION
-
-        ↓
-
-Income
-Savings
-Runway
-Debt
-Net Worth
-
-        ↓
-
-AI CONTEXT
-
-        ↓
-
-EXPLANATION
-
-        ↓
-
-DASHBOARD
-```
+| Domain       | Capability                               |
+| ------------ | ---------------------------------------- |
+| Transactions | Natural-language transaction ingestion   |
+| Cash Flow    | Income / expense analysis                |
+| Savings      | Savings-rate tracking                    |
+| Debt         | EMI and debt analysis                    |
+| Resilience   | Emergency-fund and runway analysis       |
+| Wealth       | Net-worth tracking                       |
+| Portfolio    | Asset allocation and performance context |
+| Goals        | Milestone and reserve tracking           |
+| Intelligence | Graph-based contextual retrieval         |
+| AI           | Grounded conversational explanations     |
+| Analytics    | Interactive dashboard visualizations     |
 
 ---
 
-# 📈 Financial Intelligence Dashboard
-
-The dashboard should present **decision-relevant metrics**, not just decorative charts.
-
-### Executive metrics
+# Technology Stack
 
 ```text
-┌────────────┬──────────────┬──────────────┬──────────────┐
-│ NET WORTH  │ SAVINGS RATE │ RUNWAY       │ HEALTH       │
-│ ₹18.45L    │ 28.4%        │ 6.2 months   │ 82 / 100     │
-└────────────┴──────────────┴──────────────┴──────────────┘
+                    FINANCEFLOW AI
+
+       ┌─────────────────────────────────────┐
+       │              Streamlit              │
+       │          Analytics Interface        │
+       └──────────────────┬──────────────────┘
+                          │
+       ┌──────────────────▼──────────────────┐
+       │               FastAPI               │
+       │              API Layer               │
+       └──────────────────┬──────────────────┘
+                          │
+       ┌──────────────────▼──────────────────┐
+       │              Python                 │
+       │       Financial Logic / Services    │
+       └───────────────┬───────────┬─────────┘
+                       │           │
+             ┌─────────▼───┐   ┌──▼──────────┐
+             │    Neo4j    │   │  LLM Layer  │
+             │ Financial   │   │ Explanation │
+             │   Graph     │   └─────────────┘
+             └─────────────┘
 ```
 
-### Cash-flow view
-
-```text
-Income
-████████████████████████  ₹1,20,000
-
-Expenses
-██████████████            ₹72,000
-
-Savings
-████████                  ₹48,000
-```
-
-### Portfolio view
-
-```text
-Equity             █████████████████   45%
-Mutual Funds       ███████████         30%
-Gold               ██████              15%
-Cash               ████                10%
-```
-
-These values are **illustrative examples**, not benchmark results.
+| Layer         | Technology             |
+| ------------- | ---------------------- |
+| Language      | Python 3.10+           |
+| API           | FastAPI                |
+| Database      | Neo4j                  |
+| Frontend      | Streamlit              |
+| Visualization | Plotly                 |
+| Retrieval     | GraphRAG               |
+| AI            | LLM integration        |
+| Market data   | OpenBB / Yahoo Finance |
 
 ---
 
-# 🔬 Explainability by Design
-
-FinanceFlow is designed so that a financial answer can be decomposed into:
-
-```text
-QUESTION
-   ↓
-RELEVANT FACTS
-   ↓
-GRAPH RELATIONSHIPS
-   ↓
-DETERMINISTIC CALCULATIONS
-   ↓
-RESULT
-   ↓
-AI EXPLANATION
-```
-
-This provides a much clearer reasoning trail than:
-
-```text
-Question
-   ↓
-LLM
-   ↓
-Trust me bro 😭
-```
-
----
-
-# 🧰 Technology Stack
-
-<p align="center">
-
-**Python** · **Neo4j** · **FastAPI** · **Streamlit** · **Plotly** · **GraphRAG** · **LLM** · **OpenBB / Yahoo Finance**
-
-</p>
-
-| Layer          | Technology             |
-| -------------- | ---------------------- |
-| Language       | Python 3.10+           |
-| API            | FastAPI                |
-| Graph Database | Neo4j                  |
-| UI             | Streamlit              |
-| Visualization  | Plotly                 |
-| AI             | LLM integration        |
-| Market Context | OpenBB / Yahoo Finance |
-
----
-
-# 📁 Architecture at Code Level
+# Repository Structure
 
 ```text
 Personal_Finance_AI_v1/
@@ -851,52 +869,57 @@ Personal_Finance_AI_v1/
 │   ├── styles.py
 │   └── src/
 │
+├── assets/
+│   ├── dashboard-overview.png
+│   ├── networth.png
+│   ├── cashflow-analysis.png
+│   ├── portfolio-analysis.png
+│   ├── goal-progress.png
+│   ├── graph-view.png
+│   └── financeflow-demo.gif
+│
 ├── .env.example
 └── README.md
 ```
 
 ---
 
-# 🚀 Quick Start
+# Quick Start
 
-## 1. Clone
+### 1. Clone
 
 ```bash
 git clone <your-repository-url>
 cd Personal_Finance_AI_v1
 ```
 
-## 2. Virtual environment
-
-### Windows
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### Linux / macOS
+### 2. Environment
 
 ```bash
 python -m venv .venv
+```
+
+Windows:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Linux / macOS:
+
+```bash
 source .venv/bin/activate
 ```
 
-## 3. Install
+### 3. Install
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 4. Environment
+### 4. Configure
 
-```bash
-cp .env.example .env
-```
-
-Configure the required Neo4j and LLM credentials.
-
-Example:
+Create `.env` from `.env.example` and configure the required services.
 
 ```env
 NEO4J_URI=neo4j://127.0.0.1:7687
@@ -907,23 +930,23 @@ NEO4J_DATABASE=finance-ai-antigravity
 GROQ_API_KEY=your_api_key
 ```
 
-## 5. Start Neo4j
+### 5. Start Neo4j
 
-Ensure Neo4j is running locally.
+Make sure the local Neo4j instance is running.
 
-## 6. Seed data
+### 6. Seed demo data
 
 ```bash
 python -m backend.scripts.seed_db
 ```
 
-## 7. Start API
+### 7. Start API
 
 ```bash
 uvicorn backend.main:app --reload --port 8000
 ```
 
-## 8. Start dashboard
+### 8. Launch dashboard
 
 ```bash
 streamlit run frontend/streamlit_app.py
@@ -931,162 +954,103 @@ streamlit run frontend/streamlit_app.py
 
 ---
 
-# 🎬 Recommended README Visuals
-
-For the final GitHub page, create and place these **real screenshots generated from the actual running application**:
+# What Happens When You Ask a Question?
 
 ```text
-assets/
-│
-├── hero-dashboard.png
-├── financial-health.png
-├── cashflow-analysis.png
-├── portfolio-analysis.png
-├── goal-progress.png
-├── purchase-analysis.png
-└── graph-view.png
+"Can I afford this?"
+
+            ↓
+
+┌─────────────────────────┐
+│  Understand the intent  │
+└────────────┬────────────┘
+             ↓
+┌─────────────────────────┐
+│ Retrieve financial      │
+│ relationships           │
+└────────────┬────────────┘
+             ↓
+┌─────────────────────────┐
+│ Calculate actual        │
+│ financial metrics       │
+└────────────┬────────────┘
+             ↓
+┌─────────────────────────┐
+│ Produce evidence        │
+└────────────┬────────────┘
+             ↓
+┌─────────────────────────┐
+│ Explain the result      │
+└─────────────────────────┘
 ```
 
-Recommended order:
-
-```text
-README
-  ↓
-Hero Dashboard
-  ↓
-Architecture
-  ↓
-Graph Visualization
-  ↓
-Financial Health Chart
-  ↓
-Case Study
-  ↓
-Portfolio / Cash Flow
-  ↓
-Setup
-```
-
-This gives the repository a **product-demo feel** instead of a text-heavy academic README.
+The final answer is therefore the **last stage of the pipeline**, not the first.
 
 ---
 
-# 🧠 Design Philosophy
+# Responsible Use
 
-FinanceFlow is built around a simple separation of responsibilities:
+FinanceFlow AI is a research and engineering project.
 
-```text
-┌────────────────────────────────────────┐
-│             USER INTERFACE             │
-│         Streamlit / Assistant          │
-└────────────────────┬───────────────────┘
-                     ↓
-┌────────────────────────────────────────┐
-│              AI / NLU                  │
-│      Understand intent & language      │
-└────────────────────┬───────────────────┘
-                     ↓
-┌────────────────────────────────────────┐
-│              GRAPH LAYER               │
-│       Relationships + financial facts  │
-└────────────────────┬───────────────────┘
-                     ↓
-┌────────────────────────────────────────┐
-│          DETERMINISTIC ENGINE          │
-│       Financial calculations & rules   │
-└────────────────────┬───────────────────┘
-                     ↓
-┌────────────────────────────────────────┐
-│          EXPLANATION LAYER             │
-│       Grounded AI response generation  │
-└────────────────────────────────────────┘
-```
+It is not:
+
+* a licensed financial advisor
+* a regulated financial product
+* a guarantee of investment performance
+* a substitute for professional financial advice
+
+Market and financial outputs can be affected by incomplete data, assumptions, model limitations, and changing external conditions.
 
 ---
 
-# ⚠️ Financial Safety
-
-FinanceFlow is a software/research project and **not a licensed financial advisor**.
-
-Outputs should be treated as analytical assistance rather than guaranteed financial advice.
-
-Financial decisions should consider additional information, personal circumstances, and appropriate professional advice.
-
----
-
-# 🛣️ Future Roadmap
+# Roadmap
 
 ```text
 CURRENT
-│
-├── Natural-language finance
-├── Neo4j financial graph
-├── GraphRAG retrieval
-├── Deterministic financial engine
-├── Dashboard analytics
-└── AI explanations
-        │
-        ▼
+ │
+ ├── Financial graph
+ ├── Natural-language finance
+ ├── Deterministic financial engine
+ ├── GraphRAG
+ ├── Dashboard analytics
+ └── AI explanations
+       │
+       ▼
 NEXT
-│
-├── Deeper portfolio analytics
-├── Financial scenario simulation
-├── Goal forecasting
-├── What-if analysis
-├── Automated anomaly detection
-└── Richer graph visualization
-        │
-        ▼
-LONG-TERM
-│
-├── Multimodal financial intelligence
-├── Personalized financial simulations
-├── Agentic financial workflows
-└── Continuous financial monitoring
+ │
+ ├── Scenario simulation
+ ├── What-if analysis
+ ├── Goal forecasting
+ ├── Anomaly detection
+ ├── Rich graph visualization
+ └── Deeper portfolio analytics
+       │
+       ▼
+LONG TERM
+ │
+ ├── Continuous financial monitoring
+ ├── Agentic financial workflows
+ └── Multimodal financial intelligence
 ```
 
 ---
 
-# ⭐ The Core Idea
-
-FinanceFlow AI is not designed to be:
+# The Architecture in One Line
 
 ```text
-"ChatGPT, but for money."
+Financial Events
+      ↓
+Connected Graph
+      ↓
+Deterministic Mathematics
+      ↓
+Verified Financial State
+      ↓
+AI Explanation
 ```
 
-It is designed as:
-
-```text
-             FINANCIAL DATA
-                   +
-          RELATIONSHIP GRAPH
-                   +
-        DETERMINISTIC FINANCIAL MATH
-                   +
-             GRAPHRAG
-                   +
-          AI EXPLANATION
-                   ↓
-       ┌──────────────────────┐
-       │ FINANCIAL INTELLIGENCE│
-       └──────────────────────┘
-```
-
-The result is a system that can move from:
-
-**raw financial events → connected financial state → calculated metrics → contextual reasoning → understandable action.**
-
----
+### That is FinanceFlow AI.
 
 <p align="center">
-
-### 💸 FinanceFlow AI
-
-**Turn financial data into financial understanding.**
-
-<br/>
-
-🕸️ **Graph**   ×   🧮 **Math**   ×   🤖 **AI**   ×   📊 **Analytics**
-
+  <strong>Graph × Financial Mathematics × AI × Analytics</strong>
 </p>
