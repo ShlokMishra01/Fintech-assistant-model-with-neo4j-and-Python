@@ -749,5 +749,221 @@ class Neo4jService:
                 return dict(record)
             return None
 
+    # ---------------------------------------------------------
+    # Portfolio & Investment Operations
+    # ---------------------------------------------------------
+
+    def init_portfolio_constraints(self):
+        queries = [
+            "CREATE CONSTRAINT asset_symbol_uniq IF NOT EXISTS FOR (a:Asset) REQUIRE a.symbol IS UNIQUE",
+            "CREATE CONSTRAINT portfolio_id_uniq IF NOT EXISTS FOR (p:Portfolio) REQUIRE p.id IS UNIQUE",
+            "CREATE CONSTRAINT holding_id_uniq IF NOT EXISTS FOR (h:Holding) REQUIRE h.id IS UNIQUE",
+            "CREATE CONSTRAINT inv_tx_id_uniq IF NOT EXISTS FOR (it:InvestmentTransaction) REQUIRE it.id IS UNIQUE"
+        ]
+        with self.driver.session(database=self.database) as session:
+            for q in queries:
+                try:
+                    session.run(q)
+                except Exception:
+                    pass
+
+    def get_user_portfolio(self, user_id="U001"):
+        query = """
+        MATCH (u:User {id: $user_id})
+        MERGE (u)-[:OWNS_PORTFOLIO]->(p:Portfolio)
+          ON CREATE SET p.id = 'P_' + $user_id, p.name = 'Primary Portfolio', p.created_at = date()
+        
+        OPTIONAL MATCH (p)-[:HAS_HOLDING]->(h:Holding)-[:OF_ASSET]->(a:Asset)
+        WHERE h.quantity > 0
+        OPTIONAL MATCH (h)-[:HAS_INVESTMENT_TRANSACTION]->(it:InvestmentTransaction)
+        
+        WITH p, h, a, it
+        ORDER BY it.date DESC
+        
+        WITH p, h, a, collect(DISTINCT {
+            id: it.id,
+            type: it.type,
+            quantity: it.quantity,
+            price: it.price,
+            total_amount: it.total_amount,
+            date: it.date,
+            notes: it.notes
+        }) AS txs
+        
+        WITH p, collect(DISTINCT CASE WHEN h IS NOT NULL THEN {
+            id: h.id,
+            symbol: a.symbol,
+            name: a.name,
+            asset_type: a.asset_type,
+            currency: a.currency,
+            quantity: h.quantity,
+            average_cost: h.average_cost,
+            notes: h.notes,
+            transactions: [t IN txs WHERE t.id IS NOT NULL]
+        } ELSE NULL END) AS raw_holdings
+        
+        RETURN {
+            portfolio_id: p.id,
+            name: p.name,
+            holdings: [h IN raw_holdings WHERE h IS NOT NULL]
+        } AS portfolio
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run(query, user_id=user_id)
+            record = result.single()
+            if record and record["portfolio"]:
+                return convert_dates(record["portfolio"])
+            return {"portfolio_id": f"P_{user_id}", "name": "Primary Portfolio", "holdings": []}
+
+    def add_investment_transaction(self, user_id, symbol, name, asset_type="STOCK", transaction_type="BUY", quantity=0.0, price=0.0, date_str=None, account_id=None, notes=None):
+        if quantity <= 0 or price <= 0:
+            raise ValueError("Quantity and price must be positive numbers")
+
+        symbol = symbol.strip().upper()
+        name = name.strip() if name else symbol
+        asset_type = asset_type.strip().upper() if asset_type else "STOCK"
+        transaction_type = transaction_type.strip().upper() if transaction_type else "BUY"
+        date_str = date_str or date.today().isoformat()
+        total_amount = round(quantity * price, 2)
+        inv_tx_id = f"IT_{uuid.uuid4().hex[:8].upper()}"
+        holding_id = f"H_{uuid.uuid4().hex[:8].upper()}"
+
+        query = """
+        MATCH (u:User {id: $user_id})
+        MERGE (u)-[:OWNS_PORTFOLIO]->(p:Portfolio)
+          ON CREATE SET p.id = 'P_' + $user_id, p.name = 'Primary Portfolio', p.created_at = date()
+
+        MERGE (a:Asset {symbol: $symbol})
+          ON CREATE SET a.name = $name, a.asset_type = $asset_type, a.currency = 'INR'
+          ON MATCH SET a.name = coalesce($name, a.name), a.asset_type = coalesce($asset_type, a.asset_type)
+
+        // Find or create holding
+        MERGE (p)-[:HAS_HOLDING]->(h:Holding)-[:OF_ASSET]->(a)
+          ON CREATE SET h.id = $holding_id,
+                        h.quantity = CASE WHEN $transaction_type = 'BUY' THEN $quantity ELSE 0 END,
+                        h.average_cost = CASE WHEN $transaction_type = 'BUY' THEN $price ELSE 0 END,
+                        h.notes = $notes,
+                        h.updated_at = date($date_str)
+          ON MATCH SET
+            h.average_cost = CASE
+                WHEN $transaction_type = 'BUY' AND (h.quantity + $quantity) > 0
+                THEN ((h.quantity * h.average_cost) + ($quantity * $price)) / (h.quantity + $quantity)
+                ELSE h.average_cost
+            END,
+            h.quantity = CASE
+                WHEN $transaction_type = 'BUY' THEN h.quantity + $quantity
+                WHEN $transaction_type = 'SELL' AND (h.quantity - $quantity) > 0 THEN h.quantity - $quantity
+                WHEN $transaction_type = 'SELL' THEN 0.0
+                ELSE h.quantity
+            END,
+            h.updated_at = date($date_str)
+
+        // Create investment transaction record
+        CREATE (it:InvestmentTransaction {
+            id: $inv_tx_id,
+            type: $transaction_type,
+            quantity: $quantity,
+            price: $price,
+            total_amount: $total_amount,
+            date: date($date_str),
+            notes: $notes
+        })
+        CREATE (h)-[:HAS_INVESTMENT_TRANSACTION]->(it)
+
+        // Adjust cash balance in designated bank account atomically
+        WITH u, h, a, it
+        OPTIONAL MATCH (u)-[:HAS_ACCOUNT]->(acc:Account {id: $account_id})
+        FOREACH (_ IN CASE WHEN acc IS NOT NULL AND $transaction_type = 'BUY' THEN [1] ELSE [] END |
+            SET acc.balance = acc.balance - $total_amount
+        )
+        FOREACH (_ IN CASE WHEN acc IS NOT NULL AND $transaction_type = 'SELL' THEN [1] ELSE [] END |
+            SET acc.balance = acc.balance + $total_amount
+        )
+
+        RETURN h.id AS holding_id,
+               a.symbol AS symbol,
+               a.name AS name,
+               a.asset_type AS asset_type,
+               h.quantity AS new_quantity,
+               h.average_cost AS new_average_cost,
+               it.id AS transaction_id,
+               it.type AS transaction_type,
+               it.total_amount AS total_amount,
+               acc.id AS account_id,
+               acc.balance AS new_account_balance
+        """
+
+        with self.driver.session(database=self.database) as session:
+            result = session.run(
+                query,
+                user_id=user_id,
+                symbol=symbol,
+                name=name,
+                asset_type=asset_type,
+                transaction_type=transaction_type,
+                quantity=float(quantity),
+                price=float(price),
+                total_amount=float(total_amount),
+                date_str=date_str,
+                holding_id=holding_id,
+                inv_tx_id=inv_tx_id,
+                account_id=account_id,
+                notes=notes
+            )
+            record = result.single()
+            if not record:
+                raise ValueError("Failed to execute investment transaction")
+            return convert_dates(dict(record))
+
+    def delete_holding(self, user_id, holding_id):
+        query = """
+        MATCH (u:User {id: $user_id})-[:OWNS_PORTFOLIO]->(p:Portfolio)-[:HAS_HOLDING]->(h:Holding {id: $holding_id})
+        OPTIONAL MATCH (h)-[:HAS_INVESTMENT_TRANSACTION]->(it:InvestmentTransaction)
+        DETACH DELETE it, h
+        RETURN count(h) AS deleted_count
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run(query, user_id=user_id, holding_id=holding_id)
+            record = result.single()
+            return {"deleted": record["deleted_count"] > 0}
+
+    def get_watchlist(self, user_id="U001"):
+        query = """
+        MATCH (u:User {id: $user_id})-[:WATCHES]->(a:Asset)
+        RETURN a.symbol AS symbol, a.name AS name, a.asset_type AS asset_type
+        ORDER BY a.symbol ASC
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run(query, user_id=user_id)
+            return [dict(record) for record in result]
+
+    def add_to_watchlist(self, user_id, symbol, name=None, asset_type="STOCK"):
+        symbol = symbol.strip().upper()
+        name = name.strip() if name else symbol
+        query = """
+        MATCH (u:User {id: $user_id})
+        MERGE (a:Asset {symbol: $symbol})
+          ON CREATE SET a.name = $name, a.asset_type = $asset_type, a.currency = 'INR'
+        MERGE (u)-[:WATCHES]->(a)
+        RETURN a.symbol AS symbol, a.name AS name, a.asset_type AS asset_type
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run(query, user_id=user_id, symbol=symbol, name=name, asset_type=asset_type)
+            record = result.single()
+            return dict(record)
+
+    def remove_from_watchlist(self, user_id, symbol):
+        symbol = symbol.strip().upper()
+        query = """
+        MATCH (u:User {id: $user_id})-[r:WATCHES]->(a:Asset {symbol: $symbol})
+        DELETE r
+        RETURN count(r) AS removed_count
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run(query, user_id=user_id, symbol=symbol)
+            record = result.single()
+            return {"removed": record["removed_count"] > 0}
+
     def close(self):
         self.driver.close()
+

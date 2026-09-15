@@ -5,19 +5,23 @@ from backend.app.api.transactions import router as transactions_router
 from backend.app.api.goals import router as goals_router
 from backend.app.api.assistant import router as assistant_router
 from backend.app.api.auth import router as auth_router
+from backend.app.api.portfolio import router as portfolio_router
+from backend.app.api.market import router as market_router
 
 app = FastAPI(
     title="Personal Finance AI Assistant API",
-    description="Explainable personal finance assistant using Dynamic Knowledge Graphs and LLM-based GraphRAG.",
-    version="1.0.0"
+    description="Explainable personal finance assistant using Dynamic Knowledge Graphs, Portfolio Intelligence, and LLM-based GraphRAG.",
+    version="2.0.0"
 )
 
-# Explicit CORS allowed origins for local dev frontend (Vite & React ports)
+# Explicit CORS allowed origins for local dev frontend (Vite & React & Streamlit ports)
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:8501",
+    "http://127.0.0.1:8501",
 ]
 
 app.add_middleware(
@@ -34,6 +38,8 @@ app.include_router(transactions_router)
 app.include_router(goals_router)
 app.include_router(assistant_router)
 app.include_router(auth_router)
+app.include_router(portfolio_router)
+app.include_router(market_router)
 
 @app.get("/")
 def health_check():

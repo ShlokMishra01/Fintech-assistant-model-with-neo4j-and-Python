@@ -96,11 +96,13 @@ def signup(payload: SignupRequest, response: Response):
         neo.close()
 
     user_id = user_info["user_id"]
-    _set_session_cookie(response, create_session_token(user_id))
+    token = create_session_token(user_id)
+    _set_session_cookie(response, token)
     return {
         "user_id": user_id,
         "username": user_info["username"],
-        "name": user_info["name"]
+        "name": user_info["name"],
+        "token": token
     }
 
 
@@ -111,11 +113,13 @@ def login(payload: LoginRequest, response: Response):
     try:
         user = neo.authenticate_user(payload.username, payload.password)
         if user:
-            _set_session_cookie(response, create_session_token(user["user_id"]))
+            token = create_session_token(user["user_id"])
+            _set_session_cookie(response, token)
             return {
                 "user_id": user["user_id"],
                 "username": user["username"],
-                "name": user["name"]
+                "name": user["name"],
+                "token": token
             }
     except Exception:
         pass
@@ -127,8 +131,9 @@ def login(payload: LoginRequest, response: Response):
         valid_username = hmac.compare_digest(payload.username.lower(), APP_USERNAME.lower())
         valid_password = hmac.compare_digest(payload.password, APP_PASSWORD)
         if valid_username and valid_password:
-            _set_session_cookie(response, create_session_token(APP_USER_ID))
-            return {"user_id": APP_USER_ID, "username": APP_USERNAME, "name": APP_USERNAME}
+            token = create_session_token(APP_USER_ID)
+            _set_session_cookie(response, token)
+            return {"user_id": APP_USER_ID, "username": APP_USERNAME, "name": APP_USERNAME, "token": token}
 
     raise HTTPException(status_code=401, detail="Invalid username or password")
 

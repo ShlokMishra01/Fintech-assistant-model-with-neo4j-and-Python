@@ -4,6 +4,16 @@
 *.pem
 *.key
 
+# Documentation markdown exclusions for GitHub upload
+*.md
+!README.md
+docs/**/*.md
+docs/*.md
+DEVELOPMENT_LOG.md
+NEXT_STEPS.md
+PROJECT_CONTEXT.md
+frontend/README.md
+
 # Virtual Environment & Python Cache
 .venv/
 venv/

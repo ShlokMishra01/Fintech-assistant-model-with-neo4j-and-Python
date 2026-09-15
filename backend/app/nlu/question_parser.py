@@ -103,6 +103,34 @@ def parse_question_rules(question):
             "raw_query": q
         }
 
+    # 11. Net Worth Analysis (e.g. "What is my net worth?", "What is my total wealth?")
+    if any(kw in q_lower for kw in ["net worth", "networth", "total wealth", "liquid net worth", "how wealthy"]):
+        return {
+            "intent": "NET_WORTH",
+            "amount": None,
+            "raw_query": q
+        }
+
+    # 12. Portfolio & Investment Intelligence (e.g. "What is my portfolio return?", "How much have I invested?", "What is my portfolio worth?")
+    if any(kw in q_lower for kw in ["portfolio", "invested", "investments", "my holdings", "holding allocation", "asset allocation", "portfolio return", "my stocks", "portfolio worth"]):
+        return {
+            "intent": "PORTFOLIO_ANALYSIS",
+            "amount": None,
+            "raw_query": q
+        }
+
+    # 13. Market Quote Query (e.g. "What is TCS trading at?", "Price of Apple", "Quote for Reliance")
+    if any(kw in q_lower for kw in ["trading at", "stock price", "price of", "quote for", "market quote"]):
+        # Extract potential symbol
+        symbol_m = re.search(r"(?:trading at|price of|quote for)\s*([A-Za-z0-9\.\^]+)", q_lower)
+        target_sym = symbol_m.group(1).upper() if symbol_m else None
+        return {
+            "intent": "MARKET_QUERY",
+            "symbol": target_sym,
+            "amount": None,
+            "raw_query": q
+        }
+
     return None
 
 def parse_question_llm(question):
@@ -113,9 +141,10 @@ def parse_question_llm(question):
     prompt = f"""
 You are a precise financial intent parser. Classify the user query into a JSON object matching this schema:
 {{
-  "intent": "<PURCHASE_SAFETY | SAVINGS_ANALYSIS | EMERGENCY_FUND_ANALYSIS | EMERGENCY_RUNWAY_ANALYSIS | EXPENSE_BREAKDOWN | CATEGORY_EXPENSE | DEBT_ANALYSIS | FINANCIAL_HEALTH | FINANCIAL_SUMMARY | UNKNOWN>",
+  "intent": "<PURCHASE_SAFETY | SAVINGS_ANALYSIS | EMERGENCY_FUND_ANALYSIS | EMERGENCY_RUNWAY_ANALYSIS | EXPENSE_BREAKDOWN | CATEGORY_EXPENSE | DEBT_ANALYSIS | FINANCIAL_HEALTH | FINANCIAL_SUMMARY | PORTFOLIO_ANALYSIS | NET_WORTH | MARKET_QUERY | UNKNOWN>",
   "amount": <number or null>,
-  "category": "<category string or null>"
+  "category": "<category string or null>",
+  "symbol": "<symbol string or null>"
 }}
 
 User Query: "{question}"

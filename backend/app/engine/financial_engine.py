@@ -340,3 +340,144 @@ def generate_financial_summary(context, reporting_date=None):
         "accounts": context.get("accounts", []),
         "goals": context.get("goals", []),
     }
+
+
+def calculate_portfolio_metrics(portfolio: dict, market_quotes: dict = None) -> dict:
+    """
+    Computes deterministic valuation, unrealized P/L, returns, and allocations for a portfolio.
+    Zero hallucination arithmetic.
+    """
+    market_quotes = market_quotes or {}
+    holdings = portfolio.get("holdings", []) if isinstance(portfolio, dict) else []
+
+    evaluated_holdings = []
+    total_invested = 0.0
+    total_current_value = 0.0
+
+    asset_type_totals = {}
+
+    for h in holdings:
+        qty = float(h.get("quantity", 0.0))
+        if qty <= 0:
+            continue
+        avg_cost = float(h.get("average_cost", 0.0))
+        invested = round(qty * avg_cost, 2)
+        total_invested += invested
+
+        sym = (h.get("symbol") or "").upper()
+        # Look up quote
+        quote = market_quotes.get(sym)
+        current_price = avg_cost
+        status = "USER_ENTERED"
+        source = "Holdings Record"
+
+        if quote:
+            if hasattr(quote, "current_price") and quote.current_price is not None:
+                current_price = float(quote.current_price)
+                status = str(quote.status.value) if hasattr(quote.status, "value") else str(quote.status)
+                source = str(quote.source)
+            elif isinstance(quote, dict) and quote.get("current_price") is not None:
+                current_price = float(quote["current_price"])
+                status = quote.get("status", "LIVE")
+                source = quote.get("source", "Market Data")
+
+        current_val = round(qty * current_price, 2)
+        total_current_value += current_val
+        pnl = round(current_val - invested, 2)
+        ret_pct = round((pnl / invested * 100), 2) if invested > 0 else 0.0
+
+        atype = (h.get("asset_type") or "STOCK").upper()
+        asset_type_totals[atype] = asset_type_totals.get(atype, 0.0) + current_val
+
+        evaluated_holdings.append({
+            "id": h.get("id"),
+            "symbol": sym,
+            "name": h.get("name") or sym,
+            "asset_type": atype,
+            "quantity": qty,
+            "average_cost": avg_cost,
+            "current_price": round(current_price, 2),
+            "invested_value": invested,
+            "current_value": current_val,
+            "profit_loss": pnl,
+            "return_pct": ret_pct,
+            "status": status,
+            "source": source
+        })
+
+    total_pnl = round(total_current_value - total_invested, 2)
+    total_ret_pct = round((total_pnl / total_invested * 100), 2) if total_invested > 0 else 0.0
+
+    # Calculate allocations
+    asset_allocation = []
+    for atype, val in asset_type_totals.items():
+        pct = round((val / total_current_value * 100), 2) if total_current_value > 0 else 0.0
+        asset_allocation.append({
+            "asset_type": atype,
+            "value": round(val, 2),
+            "percentage": pct
+        })
+
+    holding_allocation = []
+    for eh in evaluated_holdings:
+        pct = round((eh["current_value"] / total_current_value * 100), 2) if total_current_value > 0 else 0.0
+        holding_allocation.append({
+            "symbol": eh["symbol"],
+            "name": eh["name"],
+            "value": eh["current_value"],
+            "percentage": pct
+        })
+
+    # Sort descending
+    asset_allocation.sort(key=lambda x: x["value"], reverse=True)
+    holding_allocation.sort(key=lambda x: x["value"], reverse=True)
+
+    return {
+        "portfolio_id": portfolio.get("portfolio_id", "P_MAIN"),
+        "total_invested": round(total_invested, 2),
+        "total_current_value": round(total_current_value, 2),
+        "profit_loss": total_pnl,
+        "return_pct": total_ret_pct,
+        "holdings_count": len(evaluated_holdings),
+        "holdings": evaluated_holdings,
+        "asset_allocation": asset_allocation,
+        "holding_allocation": holding_allocation
+    }
+
+
+def calculate_net_worth(context: dict, portfolio_metrics: dict = None) -> dict:
+    """
+    Computes Total Net Worth and Liquid Net Worth deterministically.
+    Net Worth = Total Eligible Assets (Liquid Cash + Investments) - Liabilities (Total Debt)
+    """
+    accounts = context.get("accounts", [])
+    liquid_cash = sum(float(a.get("balance", 0.0)) for a in accounts)
+
+    portfolio_val = 0.0
+    if portfolio_metrics:
+        portfolio_val = float(portfolio_metrics.get("total_current_value", 0.0))
+
+    loans = context.get("loans", [])
+    total_debt = sum(float(l.get("outstanding", 0.0)) for l in loans)
+
+    pending_emi = sum(
+        float(l.get("emi", 0.0))
+        for l in loans
+        if l.get("status") == "PENDING"
+    )
+
+    total_assets = round(liquid_cash + portfolio_val, 2)
+    total_liabilities = round(total_debt, 2)
+    total_net_worth = round(total_assets - total_liabilities, 2)
+    liquid_net_worth = round(liquid_cash - pending_emi, 2)
+
+    return {
+        "liquid_cash": round(liquid_cash, 2),
+        "portfolio_value": round(portfolio_val, 2),
+        "total_assets": total_assets,
+        "total_liabilities": total_liabilities,
+        "total_net_worth": total_net_worth,
+        "liquid_net_worth": liquid_net_worth,
+        "pending_monthly_obligations": round(pending_emi, 2)
+    }
+

@@ -106,6 +106,31 @@ def seed_database():
         target_date: date('2027-03-01')
     })
     CREATE (u)-[:HAS_GOAL]->(g)
+
+    // Create Portfolio & Holdings for Rahul
+    CREATE (p:Portfolio {id: 'P_U001', name: 'Primary Portfolio', created_at: date('2026-01-01')})
+    CREATE (u)-[:OWNS_PORTFOLIO]->(p)
+
+    CREATE (a_tcs:Asset {symbol: 'TCS.NS', name: 'Tata Consultancy Services', asset_type: 'STOCK', currency: 'INR'})
+    CREATE (h_tcs:Holding {id: 'H_TCS', quantity: 10.0, average_cost: 3200.0, notes: 'Blue-chip IT core', updated_at: date('2026-03-01')})
+    CREATE (p)-[:HAS_HOLDING]->(h_tcs)
+    CREATE (h_tcs)-[:OF_ASSET]->(a_tcs)
+
+    CREATE (a_nifty:Asset {symbol: 'NIFTYBEES.NS', name: 'Nippon India ETF Nifty 50 BeES', asset_type: 'INDEX_FUND', currency: 'INR'})
+    CREATE (h_nifty:Holding {id: 'H_NIFTY', quantity: 425.0, average_cost: 235.0, notes: 'Index ETF foundation', updated_at: date('2026-03-01')})
+    CREATE (p)-[:HAS_HOLDING]->(h_nifty)
+    CREATE (h_nifty)-[:OF_ASSET]->(a_nifty)
+
+    CREATE (a_gold:Asset {symbol: 'GOLDBEES.NS', name: 'Nippon India ETF Gold BeES', asset_type: 'GOLD', currency: 'INR'})
+    CREATE (h_gold:Holding {id: 'H_GOLD', quantity: 15.0, average_cost: 6200.0, notes: 'Precious metal hedge', updated_at: date('2026-03-01')})
+    CREATE (p)-[:HAS_HOLDING]->(h_gold)
+    CREATE (h_gold)-[:OF_ASSET]->(a_gold)
+
+    // Watchlist items
+    CREATE (w_infy:Asset {symbol: 'INFY.NS', name: 'Infosys Limited', asset_type: 'STOCK', currency: 'INR'})
+    CREATE (w_rel:Asset {symbol: 'RELIANCE.NS', name: 'Reliance Industries', asset_type: 'STOCK', currency: 'INR'})
+    CREATE (u)-[:WATCHES]->(w_infy)
+    CREATE (u)-[:WATCHES]->(w_rel)
     """
 
     with driver.session(database=NEO4J_DATABASE) as session:
