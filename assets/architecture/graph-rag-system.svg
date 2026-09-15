@@ -1,0 +1,74 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="200" y1="0" x2="1200" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071522"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#020617" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="760" fill="url(#bg)"/>
+  <circle cx="1270" cy="110" r="180" fill="#0B2235" opacity="0.8"/>
+  <circle cx="180" cy="650" r="220" fill="#0B1220" opacity="0.9"/>
+
+  <g filter="url(#shadow)">
+    <rect x="110" y="105" width="220" height="120" rx="20" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="152" y="150" fill="#F8FAFC" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">User</text>
+    <text x="136" y="182" fill="#7DD3FC" font-size="17" font-family="Segoe UI, sans-serif">Income, goals, debt</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="390" y="105" width="280" height="120" rx="20" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="430" y="150" fill="#F8FAFC" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Neo4j Graph</text>
+    <text x="418" y="182" fill="#7DD3FC" font-size="17" font-family="Segoe UI, sans-serif">Accounts, holdings, EMI, cashflow</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="730" y="105" width="240" height="120" rx="20" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="780" y="150" fill="#F8FAFC" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">GraphRAG</text>
+    <text x="768" y="182" fill="#7DD3FC" font-size="17" font-family="Segoe UI, sans-serif">Relevant sub-graph</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1010" y="105" width="260" height="120" rx="20" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="1046" y="150" fill="#F8FAFC" font-size="24" font-weight="700" font-family="Segoe UI, sans-serif">Financial Engine</text>
+    <text x="1060" y="182" fill="#7DD3FC" font-size="17" font-family="Segoe UI, sans-serif">Runway, savings, health, safety</text>
+  </g>
+
+  <path d="M330 165H390" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M670 165H730" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M970 165H1010" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+
+  <g filter="url(#shadow)">
+    <rect x="290" y="315" width="320" height="150" rx="18" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="352" y="372" fill="#F8FAFC" font-size="26" font-weight="700" font-family="Segoe UI, sans-serif">Verified Metrics</text>
+    <text x="330" y="408" fill="#A5F3FC" font-size="18" font-family="Segoe UI, sans-serif">Debt burden</text>
+    <text x="330" y="436" fill="#A5F3FC" font-size="18" font-family="Segoe UI, sans-serif">Emergency fund gap</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="650" y="315" width="420" height="150" rx="18" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="712" y="372" fill="#F8FAFC" font-size="26" font-weight="700" font-family="Segoe UI, sans-serif">AI Explanation Layer</text>
+    <text x="690" y="408" fill="#C4B5FD" font-size="18" font-family="Segoe UI, sans-serif">Explains what the numbers mean</text>
+    <text x="690" y="436" fill="#C4B5FD" font-size="18" font-family="Segoe UI, sans-serif">and what the user should do next</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="530" y="560" width="340" height="120" rx="20" fill="#0B172A" stroke="#1F2A39"/>
+    <text x="592" y="612" fill="#F8FAFC" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Decision Support</text>
+    <text x="612" y="646" fill="#86EFAC" font-size="18" font-family="Segoe UI, sans-serif">Affordability, safety, runway</text>
+  </g>
+
+  <path d="M450 225V315" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M850 225V315" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M590 465L590 560" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M810 465L810 560" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M450 465C490 505 540 525 590 560" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M850 465C820 505 760 525 710 560" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+</svg>

@@ -51,6 +51,10 @@ Dashboard / API
 
 The result is a system designed to reason over a **connected financial state** rather than isolated transactions or generic prompts.
 
+<p align="center">
+  <img src="assets/hero/financeflow-hero.svg" alt="FinanceFlow AI dashboard overview" width="1200" />
+</p>
+
 ---
 
 # The Problem
@@ -161,6 +165,10 @@ It is **relationship-aware financial reasoning**.
 ---
 
 # System Architecture
+
+<p align="center">
+  <img src="assets/architecture/graph-rag-system.svg" alt="FinanceFlow AI GraphRAG architecture" width="1200" />
+</p>
 
 ```mermaid
 flowchart LR
@@ -372,7 +380,7 @@ The dashboard is designed around financial signals rather than a collection of d
 ### Executive view
 
 <p align="center">
-  <img src="./assets/dashboard-overview.png" alt="FinanceFlow executive dashboard" width="950">
+  <img src="assets/hero/financeflow-hero.svg" alt="FinanceFlow executive dashboard" width="1100">
 </p>
 
 ### Core indicators
@@ -404,70 +412,19 @@ The values above are illustrative UI examples; actual README screenshots should 
 
 The application can expose the financial state through visual analytics such as:
 
-### Net Worth
-
-<p align="center">
-  <img src="./assets/networth.png" alt="Net worth trend" width="850">
-</p>
-
-### Cash Flow
-
-<p align="center">
-  <img src="./assets/cashflow-analysis.png" alt="Cash flow analysis" width="850">
-</p>
-
-### Portfolio
-
-<p align="center">
-  <img src="./assets/portfolio-analysis.png" alt="Portfolio analytics" width="850">
-</p>
-
-### Goals
-
-<p align="center">
-  <img src="./assets/goal-progress.png" alt="Goal progress analytics" width="850">
-</p>
+The dashboard visual layer is represented by the real product surfaces above: executive KPIs, net-worth trajectory, allocation mix, emergency runway, and financial health signals. The implementation uses Plotly components in `frontend/charts.py` for net worth, allocation, expense categories, and savings analysis.
 
 Use actual Plotly exports from the application for these assets.
 
 ---
 
-# Live Product Demonstration
+# Product Decision Visual
 
-A short GIF is more effective than another 50 lines of explanation.
-
-Recommended recording:
-
-```text
-User enters transaction
-        ↓
-Dashboard updates
-        ↓
-Graph state changes
-        ↓
-Metrics recalculate
-        ↓
-AI insight appears
-```
-
-Add the recording here:
+The purchase-safety workflow is represented with a local visual built from the actual engine inputs and thresholds described in this repository.
 
 <p align="center">
-  <img src="./assets/financeflow-demo.gif" alt="FinanceFlow live dashboard workflow" width="950">
+  <img src="assets/cases/purchase-safety.svg" alt="FinanceFlow purchase safety decision" width="1100" />
 </p>
-
-### Recommended GIF sequence
-
-```text
-00:00  Dashboard
-00:03  Add transaction
-00:06  Graph update
-00:09  Metrics recalculate
-00:12  Ask financial question
-00:16  Grounded response
-```
-
-Keep the GIF under roughly 8–12 MB so the GitHub page remains fast.
 
 ---
 
